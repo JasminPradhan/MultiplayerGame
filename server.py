@@ -1,53 +1,78 @@
 import socket
-from _thread import start_new_thread
-import sys
+from _thread import *
+import pickle
+from game import Game
 
-server = "192.168.203.165"
-port = 5555
+server = "192.168.184.165"
+port = 5050
 
-
-s= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
-    s.bind((server,port))
-
+    s.bind((server, port))
 except socket.error as e:
-    print(e)
+    str(e)
 
+s.listen()
+print("Waiting for a connection, Server Started")
 
-# no args means unlimited connection
-# we need 2 users to get connected...so we will pass 2
-s.listen(2)
+connected=set()
+games={}
+idCount=0
 
-print("Waiting for a connection, server started")
+def threaded_client(conn, player, gameId):
+    global idCount
+    conn.send(str.encode(str(player)))
 
-def threaded_client(conn):
-
-    conn.send(str.encode("Connected"))
     reply=""
+
     while True:
         try:
-            # larger the size, longer the processing time
-            data=conn.recv(2048)
-            reply=data.decode("utf-8")
+            data = conn.recv(2048*8).decode('utf-8')
 
-            if not data:
-                print("Disconnected")
-                break
+
+            if gameId in games:
+                game=games[gameId]
+                # print(type(data))
+                if not data:
+                    break
+                else:
+                    if data=="reset":
+                        game.resetMove()
+                    elif data != "get":
+                        game.play(player,data)
+
+                    conn.sendall(pickle.dumps(game))
+
             else:
-                print("Received: ", reply)
-                print("Sending: ", reply)
+                break
+        except:
+            break
 
-            conn.sendall(str.encode(reply))
-        except conn.error as e:
-            print(e)
 
     print("Lost connection")
+
+    try:
+        del games[gameId]
+        print("closing game", gameId)
+    except:
+        pass
+    idCount-=1
     conn.close()
 
 while True:
-    # addr : IP address
-    conn, addr=s.accept()
-    print("connected to:",addr)
+    conn, addr = s.accept()
+    print("Connected to:", addr)
 
-    start_new_thread(threaded_client,(conn,))
+    idCount+=1
+    p=0
+
+    gameId = (idCount-1)//2
+
+    if idCount%2==1:
+        games[gameId]=Game(gameId) #gameId which is the key in games is now equals to the new game object
+        print("Creating an new game.....")
+    else:
+        games[gameId].ready=True
+        p=1
+    start_new_thread(threaded_client, (conn,p, gameId))
