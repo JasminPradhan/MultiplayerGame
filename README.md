@@ -96,17 +96,3 @@ rock-paper-scissors-multiplayer/
 - Make the leaderboard persistent across sessions.
 
 ---
-
-## Contributing
-Feel free to fork the repository and submit pull requests for new features or bug fixes.
-
----
-
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
-
----
-
-## Acknowledgements
-- Inspired by classic Rock-Paper-Scissors.
-- Built with love for multiplayer gaming enthusiasts.
