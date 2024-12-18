@@ -73,13 +73,13 @@ rock-paper-scissors-multiplayer/
 
 ## Demonstration
 ### Menu Screen
-![Menu Screen](path_to_images/menu_screen.png)
+![Menu Screen](menuscreen.png)
 
 ### Gameplay Screen
-![Gameplay Screen](path_to_images/gameplay_screen.png)
+![Gameplay Screen](gameplay.png)
 
 ### Leaderboard
-![Leaderboard](path_to_images/leaderboard.png)
+![Leaderboard](leaderboard.png)
 
 ---
 
